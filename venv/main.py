@@ -245,17 +245,20 @@ class Admin(User):
     
     def populate_books_from_csv(self, csv_path):
         try:
-            csv_path = csv_path.strip()
             with open(csv_path, mode='r', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
                     try:
-                        db.execute(
-                            "INSERT INTO books (title, author, genre, ISBN, no_of_copies) VALUES (?, ?, ?, ?, ?)",
-                            (row['Title'], row['Author'], row['Genre'], row['ISBN'], row['No_of_Copies'])
-                        )
-                        db.commit()
-                        print(f"Book {row['Title']} added successfully!")
+                        cursor = db.execute("SELECT * FROM books WHERE ISBN = ? OR title = ?", (row['ISBN'], row['Title']))
+                        book_info = cursor.fetchone()
+
+                        if book_info:
+                            print(f"Book {row['Title']} already exists!")
+                        else:
+                            db.execute("INSERT INTO books (title, author, genre, ISBN, no_of_copies) VALUES (?, ?, ?, ?, ?)",
+                                (row['Title'], row['Author'], row['Genre'], row['ISBN'], row['No_of_Copies']))
+                            db.commit()
+                            print(f"Book {row['Title']} added successfully!")
                     except sqlite3.IntegrityError as e:
                         print(f"Error inserting {row['Title']}: {e}")
         except FileNotFoundError as e:
