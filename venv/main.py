@@ -210,7 +210,7 @@ class Admin(User):
                     genre2 = str(input("Enter new genre type: "))
                     no_of_copies2 = int(input("Enter new no. of copies: "))
 
-                    db.execute("UPDATE books SET title = ?, author = ?, genre = ?, ISBN = ?, no_of_copies = ? WHERE title = ?", (title2, author2, genre2, Isbn, no_of_copies2, title))
+                    db.execute("UPDATE books SET title = ?, author = ?, genre = ?, no_of_copies = ? WHERE title = ? AND ISBN = ?", (title2, author2, genre2, no_of_copies2, title, Isbn))
                     db.commit()
                     print(f"Book {book_title}'s information updated successfully!")
 
