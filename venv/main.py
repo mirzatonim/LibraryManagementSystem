@@ -305,7 +305,7 @@ class Member(User):
 
 
     def search_books(self, book_choice):
-        valid_genres = ['Fiction', 'Fantasy', 'Romance', 'Historical', 'Dystopian', 'Science Fiction', 'Cyber Punk', 'Horror', 'Drama', 'Satire']
+        valid_genres = ['Fiction', 'Fantasy', 'Romance', 'Historical', 'Dystopian', 'Science Fiction', 'Cyberpunk', 'Horror', 'Drama', 'Satire', 'Classic', 'Contemporary', 'Thriller', 'Mystery']
                                 
         if book_choice in valid_genres:
 
@@ -657,7 +657,7 @@ if __name__ == '__main__':
                             if choice3 == '1':
 
                                 print(f"Try searching with these keyword:\n `Fiction`, `Fantasy`, `Romance`, `Historical`, `Dystopian`, `Science Fiction`, `Cyber Punk`, `Horror`")
-                                book_choice = str(input("Enter genre name to find books available: "))
+                                book_choice = input("Enter genre name to find books available: ")
                                 user.search_books(book_choice)
             
                             elif choice3 == '2':
