@@ -155,7 +155,7 @@ class Admin(User):
         book_list = library.get_bookList()
 
         for book in book_list:
-            if book._title.lower() == book_title.lower():
+            if book._title == book_title:
                 book_to_remove = book
                 break
 
@@ -233,6 +233,7 @@ class Admin(User):
             cursor = db.execute("SELECT * FROM books")
             book_info = cursor.fetchall()
             print(f"{'ID':<5} {'Title':<30} {'Author':<20} {'Genre':<18} {'ISBN':<18} {'No. of copies':<10}")
+            
             for book in book_info:
                 id,title, author, genre, Isbn, no_of_copies = book
                 print(f"{id:<5} {title:<30} {author:<20} {genre:<18} {Isbn:<18} {no_of_copies:<10}")
@@ -354,25 +355,25 @@ class Member(User):
 
                     if cursor.fetchone() is not None:
                         print(f"Sorry, you have already borrowed this book")
-                        return
-                    
-                    no_of_copies -= 1
-                    db.execute("UPDATE books SET no_of_copies = ? WHERE id = ?", (no_of_copies, book_id))
-                    db.commit()
-                    print(f"Number of copies of book {title} updated!")
+                        
+                    else:
+                        no_of_copies -= 1
+                        db.execute("UPDATE books SET no_of_copies = ? WHERE id = ?", (no_of_copies, book_id))
+                        db.commit()
+                        print(f"Number of copies of book {title} updated!")
 
-                    borrow_date = self._current_date()
-                    due_date = borrow_date + datetime.timedelta(days=7)
+                        borrow_date = self._current_date()
+                        due_date = borrow_date + datetime.timedelta(days=7)
 
-                    db.execute("INSERT INTO transactions (user_id, book_id, borrow_date, due_date) VALUES (?, ?, ?, ?)", (member_id, book_id, borrow_date, due_date))
-                    db.commit()
-                    print(f"Borrow successful..")
+                        db.execute("INSERT INTO transactions (user_id, book_id, borrow_date, due_date) VALUES (?, ?, ?, ?)", (member_id, book_id, borrow_date, due_date))
+                        db.commit()
+                        print(f"Borrow successful..")
 
-                    book = Book(title, author, genre, Isbn, no_of_copies)
-                    Member.borrow_list.append((id, book))
+                        book = Book(title, author, genre, Isbn, no_of_copies)
+                        Member.borrow_list.append((id, book))
 
-                    print(f"You borrowed Book {title} on {borrow_date}, Please return it within {due_date}")
-                    print("Thank you for borrowing this book, it's a great book to read. Happy Reading!")
+                        print(f"You borrowed Book {title} on {borrow_date}, Please return it within {due_date}")
+                        print("Thank you for borrowing this book, it's a great book to read. Happy Reading!")
                 
                 else:
                     print("Sorry, no copies available!")
@@ -514,7 +515,7 @@ if __name__ == '__main__':
 
     option1 = {'1': 'Registration', '2': 'Login', '0': 'Exit'}
     option2 = {'1': "Add Member", '2': "Delete Member", '3': "Update member info", '4': "Show all members", '5': 'Add Book', '6': "Delete Book", '7': "Update Book", '8': "Show all books",'9': "Populate books from csv", '0': 'Exit'}
-    option3 = {'1': "Search Books",'2': "Show all books", '3': "Borrow book", '4': "Return book",'5': "Show Borrow List",'6': "Show Return List", '0': "Exit"}
+    option3 = {'1': "Search Books",'2': "Show all books", '3': "Borrow book", '4': "Return book",'5': "Show Borrow List", '0': "Exit"}
     admin = None
     
     while True:
@@ -637,6 +638,8 @@ if __name__ == '__main__':
 
                             elif choice2 == '0':
                                 break
+                            else:
+                                print(f"Invalid option: {choice2}")
                     
                         
                     elif user.get_role() == 'Member':
@@ -675,12 +678,12 @@ if __name__ == '__main__':
                                 break
 
                             else:
-                                print("Invalid option...")
+                                print(f"Invalid option...{choice3}")
                 else:
                     print("Incorrect Password.")
         elif choice == '0':
             break
         else:
-            print("Invalid choice!")
+            print(f"Invalid choice!{choice}")
     
     db.close()
